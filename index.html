@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Estatística</title>
+</head>
+<body>
+    <div class="content media">
+        <p>Calcular Média</p>
+        <label for="input_media">Insira o espaço amostral: (os elementos devem ser separados por ";")</label>
+        <input type="text" id="input_media" name="input_media">
+        <button data-calcular="media">Calcular</button>
+    </div>
+
+    <div class="content mediana">
+        <p>Calcular Mediana</p>
+        <label for="input_mediana">Insira o espaço amostral: (os elementos devem ser separados por ";")</label>
+        <input type="text" id="input_mediana" name="input_mediana">
+        <button data-calcular="mediana">Calcular</button>
+    </div>
+
+    <div class="content moda">
+        <p>Calcular Moda</p>
+        <label for="input_moda">Insira o espaço amostral: (os elementos devem ser separados por ";")</label>
+        <input type="text" id="input_moda" name="input_moda">
+        <button data-calcular="moda">Calcular</button>
+    </div>
+
+
+    <script>
+        var buttons = document.querySelectorAll(".content button")
+        buttons.forEach(button => {
+            button.addEventListener("click", () => {
+                let input = button.parentElement.querySelector("input");
+                let values = input.value.split(";");
+                values.forEach(value => {
+                    values[values.indexOf(value)] = parseFloat(value)
+                })      
+                let soma = 0;
+                switch (button.dataset.calcular) {
+                    case "media":
+                        let media = 0;
+
+                        values.forEach(value => {
+                            soma += value
+                        });
+                        media = soma/values.length;
+
+                        console.log("A média é: ", media)
+                        break;
+
+                    case "mediana":
+                        let mediana;
+
+                        values.sort(function(a, b){return a-b})
+                        
+                        if (values.length%2 == 0) {
+                            while (values.length > 2) {
+                                values.pop();
+                                values.shift();
+                            };
+                            mediana = (values[0]+values[1])/2;
+                        } else if (values.length%2 == 1) {
+                            while (values.length > 1) {
+                                values.pop();
+                                values.shift();
+                            };
+                            mediana = values[0];
+                        };
+
+                        console.log("A mediana é: ", mediana);
+                        break;
+                    
+                    case "moda":
+                        let count_numbers = new Array();
+
+                        let modas = new Array();
+                        let use_modas = false;
+
+                        values.forEach(value => {
+                            let exists = false;
+                            count_numbers.forEach(count_number => {
+                                if (count_number[0] == value) {
+                                    count_number[1] += 1;
+                                    exists = true;
+                                };
+                            });
+                            if (!exists) {
+                                count_numbers.push([value, 1])
+                            }
+                        });
+
+                        let moda = count_numbers[0];
+
+                        count_numbers.forEach(count_number => {
+                            if (count_number[1] > moda[1]) {
+                                modas = new Array();
+                                modas[0] = count_number
+                                moda = count_number;
+                            } else if (count_number[1] == moda[1]) {
+                                modas.push([count_number])
+                            }
+                        });
+
+                        if (modas.length == values.length) {
+                            console.log("Amodal.")
+                        } else if (modas.length == 1) {
+                            console.log("Mono modal.")
+                            console.log("A moda é: ", modas[0][0], "repetindo", modas[0][1], "vezes");
+                        } else if (modas.length == 2) {
+                            console.log("Bi modal.")
+                            console.log("As modas são:")
+                            modas.forEach(m => {
+                                console.log(m.flat()[0], "repetindo", m.flat()[1], "vezes");
+                            })
+                        } else if (modas.length == 3) {
+                            console.log("Tri modal.")
+                            console.log("As modas são:")
+                            modas.forEach(m => {
+                                console.log(m.flat()[0], "repetindo", m.flat()[1], "vezes");
+                            })
+                        } else if (modas.length >= 4) {
+                            console.log("Multi modal.")
+                            console.log("As modas são:")
+                            modas.forEach(m => {
+                                console.log(m.flat()[0], "repetindo", m.flat()[1], "vezes");
+                            })
+                        } else {
+                            console.log("Amodal.")
+                        }
+                        break;
+                }
+            })
+        })
+    </script>
+</body>
+</html>
